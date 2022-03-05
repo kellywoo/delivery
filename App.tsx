@@ -1,77 +1,61 @@
 import * as React from 'react';
-import {NavigationContainer, ParamListBase} from '@react-navigation/native';
-import {
-  createNativeStackNavigator,
-  NativeStackScreenProps,
-} from '@react-navigation/native-stack';
-import {Text, TouchableHighlight, View} from 'react-native';
-import {useCallback} from 'react';
+import {useState} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import Orders from '@pages/Orders';
+import Delivery from '@pages/Delivery';
+import Settings from '@pages/Settings';
+import SignIn from '@pages/SignIn';
+import SignUp from '@pages/SignUp';
 
-type RootStackParamList = {
-  Home: undefined;
-  Details: undefined;
-};
-type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
-type DetailsScreenProps = NativeStackScreenProps<ParamListBase, 'Details'>;
-
-function HomeScreen({navigation}: HomeScreenProps) {
-  const onClick = useCallback(() => {
-    navigation.navigate('Details');
-  }, [navigation]);
-
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <TouchableHighlight underlayColor="orange" onPress={onClick}>
-        <Text>Home Screen</Text>
-      </TouchableHighlight>
-    </View>
-  );
-}
-
-function DetailsScreen({navigation}: DetailsScreenProps) {
-  const onClick = useCallback(() => {
-    navigation.navigate('Home');
-  }, [navigation]);
-
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <TouchableHighlight onPress={onClick}>
-        <Text>Details Screen</Text>
-      </TouchableHighlight>
-    </View>
-  );
-}
-
+const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// function App() {
-//   return (
-//     <NavigationContainer>
-//       <Stack.Navigator initialRouteName="Home">
-//         <Stack.Screen
-//           name="Home"
-//           component={HomeScreen}
-//           options={{title: 'Overview'}}
-//         />
-//         <Stack.Screen name="Details">
-//           {props => <DetailsScreen {...props} />}
-//         </Stack.Screen>
-//       </Stack.Navigator>
-//     </NavigationContainer>
-//   );
-// }
+const LoggedIn = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Orders"
+        component={Orders}
+        options={{title: '오더 목록'}}
+      />
+      <Tab.Screen
+        name="Delivery"
+        component={Delivery}
+        options={{headerShown: false}}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={Settings}
+        options={{title: '내정보'}}
+      />
+    </Tab.Navigator>
+  );
+};
+
+const LoggedOut = () => {
+  return (
+    <Stack.Navigator initialRouteName="Home">
+      <Stack.Screen
+        name="SignIn"
+        component={SignIn}
+        options={{title: '로그인'}}
+      />
+      <Stack.Screen
+        name="SignUp"
+        component={SignUp}
+        options={{title: '회원가입'}}
+      />
+    </Stack.Navigator>
+  );
+};
 
 function App() {
+  const [isLoggedin, setLoggedIn] = useState(false);
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{title: 'Overview'}}
-        />
-        <Stack.Screen name="Details" component={DetailsScreen} />
-      </Stack.Navigator>
+      {isLoggedin ? <LoggedIn /> : <LoggedOut />}
     </NavigationContainer>
   );
 }
